@@ -1,112 +1,144 @@
-// ── MOBILE NAV ──
-  function toggleNav() {
-    document.getElementById('navLinks').classList.toggle('open');
-  }
+// ── 1. NAVBAR: highlight the active link as user scrolls ──
+    var sections  = document.querySelectorAll('section[id]');
+    var navLinks  = document.querySelectorAll('.nav-links a');
 
-  document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-      document.getElementById('navLinks').classList.remove('open');
-    });
-  });
+    window.addEventListener('scroll', function () {
+      var scrollY = window.scrollY;
 
-  // ── ACTIVE NAV ON SCROLL ──
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
+      sections.forEach(function (section) {
+        var top    = section.offsetTop - 80;   // 80px offset for the fixed navbar
+        var bottom = top + section.offsetHeight;
+        var id     = section.getAttribute('id');
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(sec => {
-      if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
-    });
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === '#' + current) link.classList.add('active');
-    });
-
-    // scroll top button
-    const scrollBtn = document.getElementById('scrollTop');
-    if (window.scrollY > 400) scrollBtn.classList.add('visible');
-    else scrollBtn.classList.remove('visible');
-  });
-
-  // ── REVEAL ON SCROLL ──
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12 });
-
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // ── MODAL ──
-  function openModal() {
-    document.getElementById('modalOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function closeModalOutside(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  // ── DEPT CARD INFO ──
-  function showDeptInfo(dept) {
-    // small toast
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
-      background:var(--royal); color:#fff; padding:12px 24px;
-      border-radius:8px; font-size:14px; font-weight:600;
-      border-left:4px solid var(--gold); z-index:3000;
-      animation: toastIn 0.3s ease;
-      white-space:nowrap;
-    `;
-    toast.textContent = '📚 ' + dept + ' — click Apply Now to enroll!';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2800);
-  }
-
-  // ── FORM VALIDATION ──
-  function submitForm() {
-    let valid = true;
-
-    const fields = [
-      { id: 'firstName', errId: 'firstNameErr', check: v => v.trim().length > 1 },
-      { id: 'lastName',  errId: 'lastNameErr',  check: v => v.trim().length > 1 },
-      { id: 'email',     errId: 'emailErr',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
-      { id: 'message',   errId: 'messageErr',   check: v => v.trim().length > 5 },
-    ];
-
-    fields.forEach(({ id, errId, check }) => {
-      const input = document.getElementById(id);
-      const err   = document.getElementById(errId);
-      if (!check(input.value)) {
-        err.style.display = 'block';
-        input.style.borderColor = 'var(--accent)';
-        valid = false;
-      } else {
-        err.style.display = 'none';
-        input.style.borderColor = '#6ee7b7';
-      }
-    });
-
-    if (valid) {
-      document.getElementById('formSuccess').style.display = 'block';
-      ['firstName','lastName','email','message'].forEach(id => {
-        document.getElementById(id).value = '';
-        document.getElementById(id).style.borderColor = '#e0d8cc';
+        if (scrollY >= top && scrollY < bottom) {
+          // Remove "active" from all links, then add it to the matching one
+          navLinks.forEach(function (link) { link.classList.remove('active'); });
+          var match = document.querySelector('.nav-links a[href="#' + id + '"]');
+          if (match) { match.classList.add('active'); }
+        }
       });
-      document.getElementById('program').value = '';
+    });
+
+
+    // ── 2. HAMBURGER MENU: open/close on mobile ──
+    function toggleMenu() {
+      var menu = document.getElementById('navLinks');
+      menu.classList.toggle('open');
     }
-  }
+
+    // Close the mobile menu when a link is clicked
+    navLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+
+
+    // ── 3. SCROLL ANIMATION: fade elements in as they appear ──
+    var fadeItems = document.querySelectorAll('.fade-up');
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);   // animate once only
+        }
+      });
+    }, { threshold: 0.15 });
+
+    fadeItems.forEach(function (item) { observer.observe(item); });
+
+
+    // ── 4. TOAST NOTIFICATION: small popup message ──
+    function showToast(message) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      // Automatically hide it after 3.5 seconds
+      setTimeout(function () {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+
+    // ── 5. APPLY MODAL: open and close ──
+    function openApplyModal() {
+      document.getElementById('applyModal').classList.add('open');
+    }
+
+    function closeApplyModal() {
+      document.getElementById('applyModal').classList.remove('open');
+    }
+
+    // Click outside the white box to close
+    document.getElementById('applyModal').addEventListener('click', function (e) {
+      if (e.target === this) { closeApplyModal(); }
+    });
+
+    // "Contact Us First" button inside modal → scroll to contact section
+    function goToContact() {
+      closeApplyModal();
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ── 6. CONTACT FORM: validate and submit ──
+    function handleFormSubmit(event) {
+      event.preventDefault();   // stop the page from refreshing
+
+      // Get the field values and trim whitespace
+      var fname   = document.getElementById('fname').value.trim();
+      var lname   = document.getElementById('lname').value.trim();
+      var email   = document.getElementById('email').value.trim();
+      var message = document.getElementById('message').value.trim();
+
+      var isValid = true;   // we'll set this to false if any field is wrong
+
+      // --- Check First Name ---
+      if (fname === '') {
+        document.getElementById('fnameError').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('fnameError').style.display = 'none';
+      }
+
+      // --- Check Last Name ---
+      if (lname === '') {
+        document.getElementById('lnameError').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('lnameError').style.display = 'none';
+      }
+
+      // --- Check Email (must have @ and a dot) ---
+      var emailOK = email.includes('@') && email.includes('.');
+      if (!emailOK) {
+        document.getElementById('emailError').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('emailError').style.display = 'none';
+      }
+
+      // --- Check Message ---
+      if (message === '') {
+        document.getElementById('messageError').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('messageError').style.display = 'none';
+      }
+
+      // If all fields are correct, show the success screen
+      if (isValid) {
+        document.getElementById('contactFormWrap').style.display = 'none';
+        document.getElementById('formSuccess').style.display    = 'block';
+        showToast('✅ Message sent successfully!');
+      }
+    }
+
+    // Reset form so user can send another message
+    function resetForm() {
+      document.getElementById('contactForm').reset();
+      document.getElementById('contactFormWrap').style.display = 'block';
+      document.getElementById('formSuccess').style.display    = 'none';
+    }
