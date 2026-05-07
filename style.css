@@ -92,7 +92,7 @@
       min-height: 100vh;
       background:
         linear-gradient(135deg, rgba(13,31,20,0.88) 0%, rgba(26,107,60,0.75) 100%),
-        url(cpec1.png) center/cover no-repeat;
+        url(cpec.png) center/cover no-repeat;
       display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 100px 5% 60px;
     }
