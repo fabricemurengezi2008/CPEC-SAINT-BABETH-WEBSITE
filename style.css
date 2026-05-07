@@ -447,3 +447,28 @@
       .form-row { grid-template-columns: 1fr; }
       section { padding: 70px 5%; }
     }
+.links{
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.358);
+    }
+   .links p{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px;
+   }
+
+   .links img{
+    width: 30px;
+    height: 30px;
+   }
+
+  .links a{
+    text-decoration: none;
+    color: black;
+ } 
+ .links a:hover{
+  color: aqua;
+ }
